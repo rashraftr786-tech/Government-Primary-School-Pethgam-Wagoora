@@ -1,0 +1,780 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Student Dashboard — GPS Pethgam Wagoora</title>
+  <link rel="stylesheet" href="../css/style.css" />
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🎓</text></svg>" />
+</head>
+<body>
+
+<!-- Global Loader -->
+<div id="globalLoader" style="display:none;">
+  <div class="spinner"></div>
+  <p style="color:var(--primary);font-weight:600;">Loading…</p>
+</div>
+
+<!-- ═══ HEADER ═══════════════════════════════════════════ -->
+<header class="site-header">
+  <div class="header-inner">
+    <div class="school-brand">
+      <div class="school-logo">🏫</div>
+      <div>
+        <div class="school-name">GPS Pethgam Wagoora</div>
+        <div class="school-sub">Student Portal</div>
+      </div>
+    </div>
+    <div class="header-user">
+      <div class="header-coins" id="headerCoins">🪙 0</div>
+      <img src="" alt="Profile" class="header-avatar" id="headerAvatar" onclick="document.getElementById('profileModal').style.display='flex'" />
+      <button class="btn-logout" onclick="handleLogout()">Logout</button>
+    </div>
+  </div>
+</header>
+
+<!-- ═══ MAIN DASHBOARD ════════════════════════════════════ -->
+<main class="dashboard-layout">
+
+  <!-- Profile Card -->
+  <div class="profile-card" id="profileCard">
+    <img src="" alt="Profile" class="profile-card-avatar" id="profileAvatar" onclick="document.getElementById('profileModal').style.display='flex'" style="cursor:pointer;"/>
+    <div class="profile-card-info">
+      <div class="profile-card-name" id="profileName">Loading…</div>
+      <div class="profile-card-role" id="profileRole">🎓 Student</div>
+    </div>
+    <div class="profile-card-stats">
+      <div class="stat-badge">
+        <span class="stat-val" id="statCoins">0</span>
+        <span class="stat-label">🪙 Coins</span>
+      </div>
+      <div class="stat-badge">
+        <span class="stat-val" id="statRank">–</span>
+        <span class="stat-label">🏆 Class Rank</span>
+      </div>
+      <div class="stat-badge">
+        <span class="stat-val" id="statAnswered">0</span>
+        <span class="stat-label">✅ Answered</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Tabs -->
+  <div class="tabs" role="tablist">
+    <button class="tab active" onclick="switchTab('assignments')">📚 Assignments</button>
+    <button class="tab" onclick="switchTab('leaderboard')">🏆 Leaderboard</button>
+    <button class="tab" onclick="switchTab('mycoins')">🪙 My Coins</button>
+  </div>
+
+  <!-- ─── TAB: ASSIGNMENTS ─────────────────────────────── -->
+  <div class="tab-content active" id="tab-assignments">
+
+    <div class="filter-bar">
+      <select id="subjectFilter" onchange="loadAssignments()">
+        <option value="">All Subjects</option>
+      </select>
+      <input type="date" id="dateFilter" onchange="loadAssignments()" />
+      <button class="btn btn-outline btn-sm" onclick="clearFilters()">Clear Filters</button>
+    </div>
+
+    <div id="assignmentsList">
+      <div class="empty-state">
+        <span class="empty-icon">📝</span>
+        <p>Loading assignments…</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- ─── TAB: LEADERBOARD ─────────────────────────────── -->
+  <div class="tab-content" id="tab-leaderboard">
+
+    <div class="tabs" role="tablist" style="margin-bottom:1rem;">
+      <button class="tab active" onclick="switchLbTab('class')">My Class</button>
+      <button class="tab" onclick="switchLbTab('weekly')">Weekly</button>
+      <button class="tab" onclick="switchLbTab('monthly')">Monthly</button>
+      <button class="tab" onclick="switchLbTab('subject')">Subject</button>
+    </div>
+
+    <!-- Class LB -->
+    <div class="tab-content active" id="lb-class">
+      <div class="card">
+        <div class="section-title">🏆 Class Leaderboard</div>
+        <div id="classLbTable"><div class="empty-state"><div class="spinner"></div></div></div>
+      </div>
+    </div>
+
+    <!-- Weekly LB -->
+    <div class="tab-content" id="lb-weekly">
+      <div class="card">
+        <div class="section-title">📅 Weekly Leaderboard (This Week)</div>
+        <div id="weeklyLbTable"><div class="empty-state"><div class="spinner"></div></div></div>
+      </div>
+    </div>
+
+    <!-- Monthly LB -->
+    <div class="tab-content" id="lb-monthly">
+      <div class="card">
+        <div class="section-title">📆 Monthly Leaderboard (This Month)</div>
+        <div id="monthlyLbTable"><div class="empty-state"><div class="spinner"></div></div></div>
+      </div>
+    </div>
+
+    <!-- Subject LB -->
+    <div class="tab-content" id="lb-subject">
+      <div class="card">
+        <div class="section-title">📚 Subject Leaderboard</div>
+        <div class="subject-chips" id="lbSubjectChips"></div>
+        <div id="subjectLbTable"><div class="empty-state"><div class="spinner"></div></div></div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- ─── TAB: MY COINS ─────────────────────────────────── -->
+  <div class="tab-content" id="tab-mycoins">
+    <div class="cards-grid">
+      <div class="stats-widget">
+        <div class="stat-number" id="mcTotalCoins">0</div>
+        <div class="stat-desc">🪙 Total Coins Earned</div>
+      </div>
+      <div class="stats-widget">
+        <div class="stat-number" id="mcWeeklyCoins">0</div>
+        <div class="stat-desc">📅 This Week's Coins</div>
+      </div>
+      <div class="stats-widget">
+        <div class="stat-number" id="mcMonthlyCoins">0</div>
+        <div class="stat-desc">📆 This Month's Coins</div>
+      </div>
+      <div class="stats-widget">
+        <div class="stat-number" id="mcCorrectCount">0</div>
+        <div class="stat-desc">✅ Correct Answers</div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="section-title">📊 Coins by Subject</div>
+      <div id="subjectCoinsBreakdown">
+        <div class="empty-state"><div class="spinner"></div></div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="section-title">📜 Recent Activity</div>
+      <div id="recentActivity">
+        <div class="empty-state"><div class="spinner"></div></div>
+      </div>
+    </div>
+  </div>
+
+</main>
+
+<!-- ─── PROFILE UPDATE MODAL ─────────────────────────────── -->
+<div class="modal-overlay" id="profileModal" style="display:none;" onclick="closeProfileModal(event)">
+  <div class="modal" onclick="event.stopPropagation()">
+    <div class="modal-header">
+      <span class="modal-title">Update Profile</span>
+      <button class="modal-close" onclick="document.getElementById('profileModal').style.display='none'">✕</button>
+    </div>
+
+    <div class="form-group">
+      <label>Profile Photo</label>
+      <div class="photo-upload-area" id="updatePhotoArea">
+        <input type="file" id="updatePhoto" accept="image/*" onchange="previewUpdatePhoto()" />
+        <img id="updatePhotoPreview" class="photo-preview" src="" alt="" />
+        <div id="updatePhotoHint" style="font-size:.8rem;color:var(--primary);margin-top:.3rem;">Click to change photo</div>
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label for="updateName">Full Name</label>
+      <input type="text" id="updateName" placeholder="Your full name" />
+    </div>
+
+    <div id="updateError" class="alert alert-error" style="display:none;"></div>
+
+    <button class="btn btn-primary" onclick="updateProfile()" id="updateProfileBtn">
+      Save Changes
+    </button>
+  </div>
+</div>
+
+<!-- Firebase SDKs -->
+<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-storage-compat.js"></script>
+
+<script src="../js/firebase-config.js"></script>
+
+<script>
+// ─────────────────────────────────────────────────────────
+// GLOBALS
+// ─────────────────────────────────────────────────────────
+let currentUser   = null;
+let userData      = null;
+let attemptedIds  = new Set();
+let allAssignments = [];
+let currentLbTab  = 'class';
+let currentLbSubject = 'English';
+
+// ─────────────────────────────────────────────────────────
+// INIT
+// ─────────────────────────────────────────────────────────
+auth.onAuthStateChanged(async (user) => {
+  if (!user) { window.location.href = '../index.html'; return; }
+  showLoader(true);
+  currentUser = user;
+  try {
+    const doc = await db.collection('users').doc(user.uid).get();
+    if (!doc.exists || doc.data().role !== 'student') {
+      await auth.signOut(); window.location.href = '../index.html'; return;
+    }
+    userData = { id: doc.id, ...doc.data() };
+    initDashboard();
+  } catch (e) {
+    showLoader(false);
+    showToast('Error loading profile', 'error');
+  }
+});
+
+function initDashboard() {
+  renderProfileCard();
+  populateSubjectFilter();
+  loadAssignments();
+  loadLeaderboards();
+  loadCoinStats();
+  showLoader(false);
+}
+
+// ─────────────────────────────────────────────────────────
+// PROFILE CARD
+// ─────────────────────────────────────────────────────────
+function renderProfileCard() {
+  const avatar = userData.photoURL || defaultAvatar(userData.name);
+  document.getElementById('profileAvatar').src  = avatar;
+  document.getElementById('headerAvatar').src   = avatar;
+  document.getElementById('profileName').textContent  = userData.name;
+  document.getElementById('profileRole').textContent  = `🎓 Class ${ordinal(userData.class)} Student`;
+  document.getElementById('statCoins').textContent    = userData.coins || 0;
+  document.getElementById('headerCoins').textContent  = `🪙 ${userData.coins || 0}`;
+  document.getElementById('mcTotalCoins').textContent = userData.coins || 0;
+  document.getElementById('mcWeeklyCoins').textContent  = userData.weeklyCoins || 0;
+  document.getElementById('mcMonthlyCoins').textContent = userData.monthlyCoins || 0;
+
+  // Update photo modal
+  document.getElementById('updatePhotoPreview').src = avatar;
+  document.getElementById('updateName').value = userData.name;
+}
+
+function defaultAvatar(name) {
+  return 'https://ui-avatars.com/api/?name=' + encodeURIComponent(name) + '&background=1a7a3c&color=fff&size=128';
+}
+
+// ─────────────────────────────────────────────────────────
+// POPULATE SUBJECT FILTER
+// ─────────────────────────────────────────────────────────
+function populateSubjectFilter() {
+  const subjects = CLASS_SUBJECTS[userData.class] || [];
+  const sel = document.getElementById('subjectFilter');
+  sel.innerHTML = '<option value="">All Subjects</option>';
+  subjects.forEach(s => {
+    sel.innerHTML += `<option value="${s}">${s}</option>`;
+  });
+}
+
+// ─────────────────────────────────────────────────────────
+// LOAD ASSIGNMENTS
+// ─────────────────────────────────────────────────────────
+async function loadAssignments() {
+  const list    = document.getElementById('assignmentsList');
+  const subject = document.getElementById('subjectFilter').value;
+  const date    = document.getElementById('dateFilter').value;
+
+  list.innerHTML = '<div class="empty-state"><div class="spinner"></div><p>Loading…</p></div>';
+
+  try {
+    // Load student's attempts
+    const attSnap = await db.collection('attempts')
+      .where('studentId', '==', currentUser.uid).get();
+    attemptedIds = new Set(attSnap.docs.map(d => d.data().assignmentId));
+    const attemptMap = {};
+    attSnap.docs.forEach(d => { attemptMap[d.data().assignmentId] = d.data(); });
+
+    // Load assignments for student's class
+    let query = db.collection('assignments').where('class', '==', userData.class);
+    if (subject) query = query.where('subject', '==', subject);
+
+    const snap = await query.orderBy('createdAt', 'desc').get();
+    allAssignments = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+
+    // Filter by date if set
+    let filtered = allAssignments;
+    if (date) filtered = filtered.filter(a => a.date === date);
+
+    // Update answered count
+    const answeredCount = filtered.filter(a => attemptedIds.has(a.id)).length;
+    document.getElementById('statAnswered').textContent = attSnap.size;
+
+    if (filtered.length === 0) {
+      list.innerHTML = `
+        <div class="empty-state">
+          <span class="empty-icon">📭</span>
+          <p>No assignments found for your class yet.</p>
+        </div>`;
+      return;
+    }
+
+    list.innerHTML = filtered.map(q => buildMCQCard(q, attemptMap[q.id])).join('');
+
+  } catch (e) {
+    console.error(e);
+    list.innerHTML = `<div class="alert alert-error">Error loading assignments: ${e.message}</div>`;
+  }
+}
+
+function buildMCQCard(q, attempt) {
+  const isAnswered = !!attempt;
+  const cardClass  = isAnswered ? (attempt.isCorrect ? 'answered' : 'answered-wrong') : '';
+  const opts = ['A','B','C','D'];
+  const optVals = [q.optionA, q.optionB, q.optionC, q.optionD];
+
+  let optionsHTML = optVals.map((opt, i) => {
+    if (!opt) return '';
+    let cls = 'mcq-option';
+    if (isAnswered) {
+      const letter = opts[i];
+      if (letter === q.correctAnswer) cls += ' correct';
+      else if (letter === attempt.selectedAnswer) cls += ' wrong';
+    }
+    return `
+      <li class="${cls}" ${!isAnswered ? `onclick="selectOption('${q.id}','${opts[i]}')"` : ''}>
+        <input type="radio" name="mcq_${q.id}" value="${opts[i]}" ${isAnswered ? 'disabled' : ''}
+          ${isAnswered && attempt.selectedAnswer === opts[i] ? 'checked' : ''} />
+        <span><strong>${opts[i]}.</strong> ${opt}</span>
+      </li>`;
+  }).join('');
+
+  let feedbackHTML = '';
+  if (isAnswered) {
+    if (attempt.isCorrect) {
+      feedbackHTML = `<div class="answer-feedback feedback-correct">✅ Correct! You earned ${COINS_PER_CORRECT} 🪙 coins!</div>`;
+    } else {
+      feedbackHTML = `<div class="answer-feedback feedback-wrong">❌ Wrong! Correct answer: <strong>${q.correctAnswer}</strong></div>`;
+    }
+  }
+
+  const actionBtn = isAnswered
+    ? ''
+    : `<button class="btn btn-primary btn-sm" id="submitBtn_${q.id}" onclick="submitAnswer('${q.id}')" disabled>
+         Submit Answer
+       </button>`;
+
+  return `
+    <div class="mcq-card ${cardClass}" id="card_${q.id}">
+      <div class="mcq-meta">
+        <span class="meta-tag">Class ${q.class}</span>
+        <span class="meta-tag subject">${q.subject}</span>
+        <span class="meta-tag lesson">📖 ${q.lesson || 'General'}</span>
+        <span class="meta-tag date">📅 ${q.date || ''}</span>
+      </div>
+      <div class="mcq-question">Q. ${q.question}</div>
+      <ul class="mcq-options" id="options_${q.id}">${optionsHTML}</ul>
+      ${feedbackHTML}
+      <div class="mcq-actions">${actionBtn}</div>
+    </div>`;
+}
+
+// ─────────────────────────────────────────────────────────
+// SELECT OPTION
+// ─────────────────────────────────────────────────────────
+function selectOption(qid, letter) {
+  document.querySelectorAll(`#options_${qid} .mcq-option`).forEach(el => el.classList.remove('selected'));
+  document.querySelector(`#options_${qid} input[value="${letter}"]`).checked = true;
+  document.querySelector(`#options_${qid} input[value="${letter}"]`).closest('.mcq-option').classList.add('selected');
+  const btn = document.getElementById(`submitBtn_${qid}`);
+  if (btn) btn.disabled = false;
+}
+
+// ─────────────────────────────────────────────────────────
+// SUBMIT ANSWER
+// ─────────────────────────────────────────────────────────
+async function submitAnswer(qid) {
+  if (attemptedIds.has(qid)) { showToast('Already answered!', 'info'); return; }
+
+  const selected = document.querySelector(`#options_${qid} input[type="radio"]:checked`);
+  if (!selected) { showToast('Please select an answer!', 'error'); return; }
+
+  const btn = document.getElementById(`submitBtn_${qid}`);
+  btn.disabled = true;
+  btn.textContent = 'Submitting…';
+
+  const assignment = allAssignments.find(a => a.id === qid);
+  const isCorrect  = selected.value === assignment.correctAnswer;
+  const coinsEarned = isCorrect ? COINS_PER_CORRECT : 0;
+  const week  = getCurrentWeek();
+  const month = getCurrentMonth();
+
+  try {
+    // Save attempt
+    await db.collection('attempts').add({
+      studentId: currentUser.uid,
+      studentName: userData.name,
+      studentClass: userData.class,
+      studentPhoto: userData.photoURL || '',
+      assignmentId: qid,
+      subject: assignment.subject,
+      selectedAnswer: selected.value,
+      correctAnswer: assignment.correctAnswer,
+      isCorrect,
+      coinsEarned,
+      week,
+      month,
+      timestamp: firebase.firestore.FieldValue.serverTimestamp()
+    });
+
+    // Update student coins
+    if (isCorrect) {
+      const subjectCoinField = `subjectCoins.${assignment.subject}`;
+      await db.collection('users').doc(currentUser.uid).update({
+        coins: firebase.firestore.FieldValue.increment(COINS_PER_CORRECT),
+        weeklyCoins: firebase.firestore.FieldValue.increment(COINS_PER_CORRECT),
+        monthlyCoins: firebase.firestore.FieldValue.increment(COINS_PER_CORRECT),
+        [subjectCoinField]: firebase.firestore.FieldValue.increment(COINS_PER_CORRECT)
+      });
+
+      userData.coins = (userData.coins || 0) + COINS_PER_CORRECT;
+      userData.weeklyCoins = (userData.weeklyCoins || 0) + COINS_PER_CORRECT;
+      userData.monthlyCoins = (userData.monthlyCoins || 0) + COINS_PER_CORRECT;
+
+      // Animate coins
+      const coinEl = document.getElementById('statCoins');
+      coinEl.textContent = userData.coins;
+      coinEl.classList.add('coin-animate');
+      setTimeout(() => coinEl.classList.remove('coin-animate'), 600);
+
+      document.getElementById('headerCoins').textContent = `🪙 ${userData.coins}`;
+      showToast(`🎉 Correct! +${COINS_PER_CORRECT} coins!`, 'success');
+    } else {
+      showToast('❌ Wrong answer. Try the next one!', 'error');
+    }
+
+    attemptedIds.add(qid);
+
+    // Re-render card
+    const attempt = { selectedAnswer: selected.value, isCorrect, coinsEarned };
+    const card = document.getElementById(`card_${qid}`);
+    card.outerHTML = buildMCQCard(assignment, attempt);
+
+  } catch (e) {
+    console.error(e);
+    showToast('Error submitting answer', 'error');
+    btn.disabled = false;
+    btn.textContent = 'Submit Answer';
+  }
+}
+
+// ─────────────────────────────────────────────────────────
+// LEADERBOARDS
+// ─────────────────────────────────────────────────────────
+function switchLbTab(tab) {
+  currentLbTab = tab;
+  const tabs = document.querySelectorAll('#tab-leaderboard .tabs .tab');
+  const contents = document.querySelectorAll('#tab-leaderboard .tab-content');
+  tabs.forEach((t, i) => {
+    const ids = ['class','weekly','monthly','subject'];
+    t.classList.toggle('active', ids[i] === tab);
+  });
+  contents.forEach(c => {
+    c.classList.toggle('active', c.id === `lb-${tab}`);
+  });
+
+  if (tab === 'class') loadClassLeaderboard();
+  else if (tab === 'weekly') loadWeeklyLeaderboard();
+  else if (tab === 'monthly') loadMonthlyLeaderboard();
+  else if (tab === 'subject') initSubjectLeaderboard();
+}
+
+async function loadLeaderboards() {
+  loadClassLeaderboard();
+}
+
+async function loadClassLeaderboard() {
+  const el = document.getElementById('classLbTable');
+  el.innerHTML = '<div class="empty-state"><div class="spinner"></div></div>';
+  try {
+    const snap = await db.collection('users')
+      .where('role', '==', 'student')
+      .where('class', '==', userData.class)
+      .orderBy('coins', 'desc')
+      .limit(20)
+      .get();
+
+    const students = snap.docs.map((d, i) => ({ rank: i+1, ...d.data(), uid: d.id }));
+    el.innerHTML = renderLeaderboardTable(students, currentUser.uid);
+
+    // Update rank
+    const myRank = students.findIndex(s => s.uid === currentUser.uid) + 1;
+    document.getElementById('statRank').textContent = myRank > 0 ? ordinal(myRank) : '–';
+
+  } catch(e) { el.innerHTML = `<div class="alert alert-error">${e.message}</div>`; }
+}
+
+async function loadWeeklyLeaderboard() {
+  const el = document.getElementById('weeklyLbTable');
+  el.innerHTML = '<div class="empty-state"><div class="spinner"></div></div>';
+  const week = getCurrentWeek();
+  try {
+    const snap = await db.collection('users')
+      .where('role', '==', 'student')
+      .orderBy('weeklyCoins', 'desc')
+      .limit(20)
+      .get();
+    const students = snap.docs.map((d, i) => ({ rank: i+1, coins: d.data().weeklyCoins || 0, ...d.data(), uid: d.id }));
+    el.innerHTML = renderLeaderboardTable(students, currentUser.uid);
+  } catch(e) { el.innerHTML = `<div class="alert alert-error">${e.message}</div>`; }
+}
+
+async function loadMonthlyLeaderboard() {
+  const el = document.getElementById('monthlyLbTable');
+  el.innerHTML = '<div class="empty-state"><div class="spinner"></div></div>';
+  try {
+    const snap = await db.collection('users')
+      .where('role', '==', 'student')
+      .orderBy('monthlyCoins', 'desc')
+      .limit(20)
+      .get();
+    const students = snap.docs.map((d, i) => ({ rank: i+1, coins: d.data().monthlyCoins || 0, ...d.data(), uid: d.id }));
+    el.innerHTML = renderLeaderboardTable(students, currentUser.uid);
+  } catch(e) { el.innerHTML = `<div class="alert alert-error">${e.message}</div>`; }
+}
+
+function initSubjectLeaderboard() {
+  const subjects = ALL_SUBJECTS;
+  const chips = document.getElementById('lbSubjectChips');
+  chips.innerHTML = subjects.map(s =>
+    `<button class="subject-chip ${s === currentLbSubject ? 'active' : ''}" onclick="loadSubjectLeaderboard('${s}',this)">${s}</button>`
+  ).join('');
+  loadSubjectLeaderboard(currentLbSubject);
+}
+
+async function loadSubjectLeaderboard(subject, btnEl) {
+  currentLbSubject = subject;
+  if (btnEl) {
+    document.querySelectorAll('#lbSubjectChips .subject-chip').forEach(c => c.classList.remove('active'));
+    btnEl.classList.add('active');
+  }
+  const el = document.getElementById('subjectLbTable');
+  el.innerHTML = '<div class="empty-state"><div class="spinner"></div></div>';
+
+  try {
+    const field = `subjectCoins.${subject}`;
+    const snap = await db.collection('users')
+      .where('role', '==', 'student')
+      .orderBy(field, 'desc')
+      .limit(20)
+      .get();
+    const students = snap.docs.map((d, i) => ({
+      rank: i+1,
+      coins: (d.data().subjectCoins || {})[subject] || 0,
+      ...d.data(),
+      uid: d.id
+    }));
+    el.innerHTML = renderLeaderboardTable(students, currentUser.uid);
+  } catch(e) {
+    // Fallback: compute from attempts
+    el.innerHTML = `<div class="alert alert-info">Loading subject leaderboard… (Creating index)</div>`;
+  }
+}
+
+function renderLeaderboardTable(students, myUid) {
+  if (!students.length) return `<div class="empty-state"><span class="empty-icon">🏆</span><p>No data yet</p></div>`;
+  const medals = ['🥇','🥈','🥉'];
+  return `
+    <div style="overflow-x:auto;">
+    <table class="leaderboard-table">
+      <thead>
+        <tr>
+          <th>Rank</th>
+          <th>Student</th>
+          <th>Class</th>
+          <th>🪙 Coins</th>
+        </tr>
+      </thead>
+      <tbody>
+        ${students.map((s, i) => `
+          <tr class="rank-${i+1}" style="${s.uid === myUid ? 'background:var(--primary-light);font-weight:700;' : ''}">
+            <td>${medals[i] || (i+1)}</td>
+            <td>
+              <img src="${s.photoURL || defaultAvatar(s.name)}" class="lb-avatar" alt="" onerror="this.src='${defaultAvatar(s.name)}'" />
+              ${s.name} ${s.uid === myUid ? '<span style="color:var(--primary);font-size:.75rem;">(You)</span>' : ''}
+            </td>
+            <td>Class ${s.class}</td>
+            <td><span class="coin-display"><span class="coin-icon">🪙</span>${s.coins || 0}</span></td>
+          </tr>`).join('')}
+      </tbody>
+    </table>
+    </div>`;
+}
+
+// ─────────────────────────────────────────────────────────
+// COIN STATS
+// ─────────────────────────────────────────────────────────
+async function loadCoinStats() {
+  // Correct answers count
+  try {
+    const snap = await db.collection('attempts')
+      .where('studentId', '==', currentUser.uid)
+      .where('isCorrect', '==', true)
+      .get();
+    document.getElementById('mcCorrectCount').textContent = snap.size;
+  } catch(e) {}
+
+  // Subject breakdown
+  const breakdown = document.getElementById('subjectCoinsBreakdown');
+  const subjectCoins = userData.subjectCoins || {};
+  const subjects = CLASS_SUBJECTS[userData.class] || [];
+  if (!subjects.length) { breakdown.innerHTML = '<p>No data</p>'; return; }
+
+  const maxCoins = Math.max(...subjects.map(s => subjectCoins[s] || 0), 1);
+  breakdown.innerHTML = subjects.map(s => {
+    const c = subjectCoins[s] || 0;
+    const pct = Math.round((c / maxCoins) * 100);
+    return `
+      <div style="margin-bottom:.85rem;">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:.25rem;">
+          <span style="font-weight:600;font-size:.9rem;">${s}</span>
+          <span class="coin-display"><span class="coin-icon">🪙</span>${c}</span>
+        </div>
+        <div class="progress-bar">
+          <div class="progress-fill" style="width:${pct}%"></div>
+        </div>
+      </div>`;
+  }).join('');
+
+  // Recent activity
+  loadRecentActivity();
+}
+
+async function loadRecentActivity() {
+  const el = document.getElementById('recentActivity');
+  try {
+    const snap = await db.collection('attempts')
+      .where('studentId', '==', currentUser.uid)
+      .orderBy('timestamp', 'desc')
+      .limit(10)
+      .get();
+
+    if (!snap.size) { el.innerHTML = '<div class="empty-state"><span class="empty-icon">📭</span><p>No activity yet</p></div>'; return; }
+
+    el.innerHTML = snap.docs.map(d => {
+      const a = d.data();
+      const ts = a.timestamp ? new Date(a.timestamp.seconds * 1000).toLocaleString() : '';
+      return `
+        <div class="attempt-item">
+          <div style="flex:1;">
+            <div style="font-weight:600;font-size:.88rem;">${a.subject || 'Subject'}</div>
+            <div style="font-size:.78rem;color:var(--gray-400);">${ts}</div>
+          </div>
+          <span class="attempt-result ${a.isCorrect ? 'correct' : 'wrong'}">
+            ${a.isCorrect ? `+${COINS_PER_CORRECT} 🪙` : '❌ Wrong'}
+          </span>
+        </div>`;
+    }).join('');
+  } catch(e) {
+    el.innerHTML = '<div class="alert alert-error">Error loading activity</div>';
+  }
+}
+
+// ─────────────────────────────────────────────────────────
+// UPDATE PROFILE
+// ─────────────────────────────────────────────────────────
+function previewUpdatePhoto() {
+  const file = document.getElementById('updatePhoto').files[0];
+  if (file) {
+    const reader = new FileReader();
+    reader.onload = e => { document.getElementById('updatePhotoPreview').src = e.target.result; };
+    reader.readAsDataURL(file);
+  }
+}
+
+function closeProfileModal(e) {
+  if (e.target === document.getElementById('profileModal')) {
+    document.getElementById('profileModal').style.display = 'none';
+  }
+}
+
+async function updateProfile() {
+  const name  = document.getElementById('updateName').value.trim();
+  const photo = document.getElementById('updatePhoto').files[0];
+  const btn   = document.getElementById('updateProfileBtn');
+  const errEl = document.getElementById('updateError');
+  errEl.style.display = 'none';
+
+  if (!name) { errEl.textContent = 'Name cannot be empty.'; errEl.style.display = 'block'; return; }
+
+  btn.disabled = true;
+  btn.textContent = 'Saving…';
+
+  try {
+    const updates = { name };
+    if (photo) {
+      const url = await uploadPhoto(photo, currentUser.uid, 'profile_photos');
+      updates.photoURL = url;
+      userData.photoURL = url;
+    }
+    await db.collection('users').doc(currentUser.uid).update(updates);
+    userData.name = name;
+    renderProfileCard();
+    document.getElementById('profileModal').style.display = 'none';
+    showToast('Profile updated!', 'success');
+  } catch(e) {
+    errEl.textContent = 'Error updating profile.';
+    errEl.style.display = 'block';
+  }
+
+  btn.disabled = false;
+  btn.textContent = 'Save Changes';
+}
+
+async function uploadPhoto(file, uid, folder) {
+  const ext = file.name.split('.').pop();
+  const ref = storage.ref(`${folder}/${uid}.${ext}`);
+  await ref.put(file);
+  return await ref.getDownloadURL();
+}
+
+// ─────────────────────────────────────────────────────────
+// TABS
+// ─────────────────────────────────────────────────────────
+function switchTab(name) {
+  document.querySelectorAll('.dashboard-layout > .tabs .tab').forEach((t, i) => {
+    const ids = ['assignments','leaderboard','mycoins'];
+    t.classList.toggle('active', ids[i] === name);
+  });
+  document.querySelectorAll('.dashboard-layout > .tab-content').forEach(c => {
+    c.classList.toggle('active', c.id === `tab-${name}`);
+  });
+  if (name === 'mycoins') loadCoinStats();
+}
+
+function clearFilters() {
+  document.getElementById('subjectFilter').value = '';
+  document.getElementById('dateFilter').value = '';
+  loadAssignments();
+}
+
+// ─────────────────────────────────────────────────────────
+// LOGOUT
+// ─────────────────────────────────────────────────────────
+async function handleLogout() {
+  await auth.signOut();
+  window.location.href = '../index.html';
+}
+</script>
+
+<footer class="site-footer">
+  <p>🏫 Government Primary School Pethgam Wagoora &nbsp;|&nbsp; Assignment Portal</p>
+</footer>
+
+</body>
+</html>
