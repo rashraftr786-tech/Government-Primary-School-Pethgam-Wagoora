@@ -5,18 +5,18 @@
 // ============================================================
 
 const firebaseConfig = {
+// Ensure this matches your project EXACTLY
+const firebaseConfig = {
   apiKey: "AIzaSyCeSKZ5YGY2Xz2bzBQTC5TtjrCwogsLQxk",
   authDomain: "home-assignment-portal.firebaseapp.com",
   projectId: "home-assignment-portal",
-  storageBucket: "home-assignment-portal.firebasestorage.app",
+  storageBucket: "home-assignment-portal.firebasestorage.app", // Check this match!
   messagingSenderId: "4884308703",
-  appId: "1:4884308703:web:3116a9d24a51b3a777ff6a",
-  measurementId: "G-H3D9HQHL90"
+  appId: "1:4884308703:web:3116a9d24a51b3a777ff6a"
 };
 
-// USE THIS EXACT STYLE
+// Use the COMPAT initialize method
 firebase.initializeApp(firebaseConfig);
-
 const auth = firebase.auth();
 const db = firebase.firestore();
 const storage = firebase.storage();
