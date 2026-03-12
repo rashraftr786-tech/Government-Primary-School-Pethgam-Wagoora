@@ -14,9 +14,16 @@ const firebaseConfig = {
   measurementId: "G-H3D9HQHL90"
 };
 
-// Initialize Firebase
-const app = initializeApp(firebaseConfig);
-const analytics = getAnalytics(app);
+// Replace your "Initialize Firebase" section with this:
+if (!firebase.apps.length) {
+    firebase.initializeApp(firebaseConfig);
+}
+
+// Now these will work correctly:
+const auth = firebase.auth();
+const db = firebase.firestore();
+const storage = firebase.storage();
+const analytics = firebase.analytics(); 
 
 // Firebase Services
 const auth = firebase.auth();
