@@ -14,10 +14,9 @@ const firebaseConfig = {
   measurementId: "G-H3D9HQHL90"
 };
 
-// Initialize Firebase using the "Compat" (v8-style) method
+// USE THIS EXACT STYLE
 firebase.initializeApp(firebaseConfig);
 
-// Initialize Services
 const auth = firebase.auth();
 const db = firebase.firestore();
 const storage = firebase.storage();
