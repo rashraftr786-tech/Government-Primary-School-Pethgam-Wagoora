@@ -14,16 +14,16 @@ const firebaseConfig = {
   measurementId: "G-H3D9HQHL90"
 };
 
-// Replace your "Initialize Firebase" section with this:
-if (!firebase.apps.length) {
-    firebase.initializeApp(firebaseConfig);
-}
+// Initialize Firebase using the "Compat" (v8-style) method
+firebase.initializeApp(firebaseConfig);
 
-// Now these will work correctly:
+// Initialize Services
 const auth = firebase.auth();
 const db = firebase.firestore();
 const storage = firebase.storage();
-const analytics = firebase.analytics(); 
+
+// Note: If you don't have the Analytics script in your HTML, 
+// remove the analytics line entirely to avoid errors.
 
 // Firebase Services
 const auth = firebase.auth();
