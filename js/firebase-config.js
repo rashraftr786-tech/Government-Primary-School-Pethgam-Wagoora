@@ -1,30 +1,22 @@
 // ============================================================
 // FIREBASE CONFIGURATION
-// Replace these values with your actual Firebase project config
-// Get them from: Firebase Console > Project Settings > Web App
 // ============================================================
 
-const firebaseConfig = {
-// Ensure this matches your project EXACTLY
 const firebaseConfig = {
   apiKey: "AIzaSyCeSKZ5YGY2Xz2bzBQTC5TtjrCwogsLQxk",
   authDomain: "home-assignment-portal.firebaseapp.com",
   projectId: "home-assignment-portal",
-  storageBucket: "home-assignment-portal.firebasestorage.app", // Check this match!
+  storageBucket: "home-assignment-portal.firebasestorage.app",
   messagingSenderId: "4884308703",
   appId: "1:4884308703:web:3116a9d24a51b3a777ff6a"
 };
 
-// Use the COMPAT initialize method
-firebase.initializeApp(firebaseConfig);
-const auth = firebase.auth();
-const db = firebase.firestore();
-const storage = firebase.storage();
+// Initialize Firebase only if it hasn't been initialized yet
+if (!firebase.apps.length) {
+    firebase.initializeApp(firebaseConfig);
+}
 
-// Note: If you don't have the Analytics script in your HTML, 
-// remove the analytics line entirely to avoid errors.
-
-// Firebase Services
+// Global Firebase Services
 const auth = firebase.auth();
 const db = firebase.firestore();
 const storage = firebase.storage();
@@ -44,18 +36,18 @@ const CLASS_SUBJECTS = {
 };
 
 const ALL_SUBJECTS = ['English', 'Mathematics', 'Urdu', 'Kashmiri', 'EVS', 'Science', 'Social Science'];
-
 const COINS_PER_CORRECT = 5;
 
 // ============================================================
-// ADMIN CREDENTIALS (Pre-created)
+// ADMIN CREDENTIALS
 // ============================================================
 const ADMIN_EMAIL = "admin@pethgamwagoora.edu";
 const ADMIN_PASS  = "Admin@GPS2024";
 
 // ============================================================
-// UTILITY: Get current week string (e.g., "2024-W01")
+// UTILITY FUNCTIONS
 // ============================================================
+
 function getCurrentWeek() {
   const now = new Date();
   const startOfYear = new Date(now.getFullYear(), 0, 1);
@@ -63,26 +55,17 @@ function getCurrentWeek() {
   return `${now.getFullYear()}-W${String(weekNo).padStart(2, '0')}`;
 }
 
-// ============================================================
-// UTILITY: Get current month string (e.g., "2024-03")
-// ============================================================
 function getCurrentMonth() {
   const now = new Date();
   return `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`;
 }
 
-// ============================================================
-// UTILITY: Get ordinal suffix
-// ============================================================
 function ordinal(n) {
   const s = ["th","st","nd","rd"];
   const v = n % 100;
   return n + (s[(v-20)%10] || s[v] || s[0]);
 }
 
-// ============================================================
-// UTILITY: Show toast notification
-// ============================================================
 function showToast(message, type = 'success') {
   let toast = document.getElementById('toast');
   if (!toast) {
@@ -95,9 +78,6 @@ function showToast(message, type = 'success') {
   setTimeout(() => toast.classList.remove('show'), 3500);
 }
 
-// ============================================================
-// UTILITY: Show loading spinner
-// ============================================================
 function showLoader(show = true) {
   const loader = document.getElementById('globalLoader');
   if (loader) loader.style.display = show ? 'flex' : 'none';
