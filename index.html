@@ -198,21 +198,37 @@ auth.onAuthStateChanged(async (user) => {
   if (user) {
     showLoader(true);
     try {
+      // Check if user has a profile document in Firestore
       const doc = await db.collection('users').doc(user.uid).get();
       if (doc.exists) {
         const role = doc.data().role;
         redirectByRole(role);
-        return;
+      } else {
+        // User exists in Auth but not in Firestore
+        console.warn("No user profile found in Firestore.");
+        showLoader(false);
       }
-    } catch (e) {}
-    showLoader(false);
+    } catch (e) {
+      console.error("Auth state check error:", e);
+      showLoader(false);
+    }
   }
 });
 
 function redirectByRole(role) {
-  const map = { admin: 'pages/admin.html', teacher: 'pages/teacher.html', student: 'pages/student.html' };
-  if (map[role]) window.location.href = map[role];
-  else showLoader(false);
+  // Path must match your GitHub repository folder: 'pages/'
+  const map = { 
+    admin: 'pages/admin.html', 
+    teacher: 'pages/teacher.html', 
+    student: 'pages/student.html' 
+  };
+  
+  if (map[role]) {
+    window.location.href = map[role];
+  } else {
+    showLoader(false);
+    alert("Role '" + role + "' not recognized. Please contact admin.");
+  }
 }
 
 // ──────────────────────────────────────────────────────────
@@ -281,16 +297,11 @@ async function handleLogin(e) {
 
   try {
     await auth.signInWithEmailAndPassword(email, pass);
-    // onAuthStateChanged will handle redirect
   } catch (err) {
-    let msg = 'Login failed. Please check your credentials.';
-    if (err.code === 'auth/user-not-found') msg = 'No account found with this email.';
-    else if (err.code === 'auth/wrong-password') msg = 'Incorrect password.';
-    else if (err.code === 'auth/invalid-email') msg = 'Invalid email address.';
-    else if (err.code === 'auth/too-many-requests') msg = 'Too many attempts. Try later.';
+    let msg = err.message; // Detailed error for troubleshooting
     showError('loginError', msg);
     btn.disabled = false;
-    btn.innerHTML = '<span id="loginBtnText">Login</span>';
+    btn.innerHTML = 'Login';
   }
 }
 
@@ -319,11 +330,6 @@ async function handleStudentSignup(e) {
   const photo   = document.getElementById('studentPhoto').files[0];
   const btn     = document.getElementById('studentSignupBtn');
 
-  if (!name || !cls || !email || !pass) {
-    showError('signupError', 'Please fill in all fields.');
-    return;
-  }
-
   btn.disabled = true;
   btn.textContent = 'Creating Account…';
   showLoader(true);
@@ -331,10 +337,10 @@ async function handleStudentSignup(e) {
   try {
     const cred    = await auth.createUserWithEmailAndPassword(email, pass);
     const uid     = cred.user.uid;
-    let photoURL  = 'https://ui-avatars.com/api/?name=' + encodeURIComponent(name) + '&background=1a7a3c&color=fff&size=128';
+    let photoURL  = 'https://ui-avatars.com/api/?name=' + encodeURIComponent(name);
 
     if (photo) {
-      try { photoURL = await uploadPhoto(photo, uid, 'profile_photos'); } catch(pe) {}
+       photoURL = await uploadPhoto(photo, uid, 'profile_photos');
     }
 
     await db.collection('users').doc(uid).set({
@@ -350,16 +356,11 @@ async function handleStudentSignup(e) {
       createdAt: firebase.firestore.FieldValue.serverTimestamp()
     });
 
-    showToast('Account created! Welcome ' + name + '!', 'success');
-    // redirect handled by onAuthStateChanged
+    showToast('Account created!', 'success');
 
   } catch (err) {
     showLoader(false);
-    let msg = 'Signup failed. Please try again.';
-    if (err.code === 'auth/email-already-in-use') msg = 'This email is already registered.';
-    else if (err.code === 'auth/invalid-email') msg = 'Invalid email address.';
-    else if (err.code === 'auth/weak-password') msg = 'Password is too weak (min 6 chars).';
-    showError('signupError', msg);
+    showError('signupError', err.message);
     btn.disabled = false;
     btn.textContent = 'Create Student Account';
   }
@@ -379,11 +380,6 @@ async function handleTeacherSignup(e) {
   const photo   = document.getElementById('teacherPhoto').files[0];
   const btn     = document.getElementById('teacherSignupBtn');
 
-  if (!name || !subject || !email || !pass) {
-    showError('signupError', 'Please fill in all fields.');
-    return;
-  }
-
   btn.disabled = true;
   btn.textContent = 'Creating Account…';
   showLoader(true);
@@ -391,10 +387,10 @@ async function handleTeacherSignup(e) {
   try {
     const cred    = await auth.createUserWithEmailAndPassword(email, pass);
     const uid     = cred.user.uid;
-    let photoURL  = 'https://ui-avatars.com/api/?name=' + encodeURIComponent(name) + '&background=1a7a3c&color=fff&size=128';
+    let photoURL  = 'https://ui-avatars.com/api/?name=' + encodeURIComponent(name);
 
     if (photo) {
-      try { photoURL = await uploadPhoto(photo, uid, 'profile_photos'); } catch(pe) {}
+      photoURL = await uploadPhoto(photo, uid, 'profile_photos');
     }
 
     await db.collection('users').doc(uid).set({
@@ -404,14 +400,11 @@ async function handleTeacherSignup(e) {
       createdAt: firebase.firestore.FieldValue.serverTimestamp()
     });
 
-    showToast('Account created! Welcome ' + name + '!', 'success');
+    showToast('Account created!', 'success');
 
   } catch (err) {
     showLoader(false);
-    let msg = 'Signup failed. Please try again.';
-    if (err.code === 'auth/email-already-in-use') msg = 'This email is already registered.';
-    else if (err.code === 'auth/weak-password') msg = 'Password is too weak (min 6 chars).';
-    showError('signupError', msg);
+    showError('signupError', err.message);
     btn.disabled = false;
     btn.textContent = 'Create Teacher Account';
   }
