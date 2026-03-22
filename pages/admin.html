@@ -16,20 +16,32 @@
 
 <header class="site-header">
   <div class="header-inner">
-    <div class="school-brand">
-      <img src="https://i.ibb.co/5hLfQd8k/1768142518711.png" alt="GPS Logo" class="school-logo-img">
-      <div>
-        <div class="school-name">GPS Pethgam Wagoora</div>
-        <div class="school-sub">Admin Panel</div>
+    
+    <a href="admin.html" class="school-brand" style="text-decoration: none; color: inherit;">
+      <img src="https://i.ibb.co/5hLfQd8k/1768142518711.png" alt="GPS Pethgam Wagoora Logo" class="school-logo-img">
+      <div class="brand-text">
+        <h1 class="school-name">GPS Pethgam Wagoora</h1>
+        <small class="school-sub">Admin Dashboard</small>
       </div>
+    </a>
+
+    <div class="header-user" aria-label="User profile and logout">
+      <div class="user-info">
+        <span id="headerName" class="user-name">Loading...</span>
+        <img src="https://ui-avatars.com/api/?name=Admin&background=random" 
+             alt="Admin Profile" 
+             class="header-avatar" 
+             id="headerAvatar" />
+      </div>
+      
+      <button class="btn-logout" onclick="handleLogout()" aria-label="Log out of system">
+        <span>Logout</span>
+      </button>
     </div>
-    <div class="header-user">
-      <img src="" alt="Admin" class="header-avatar" id="headerAvatar" />
-      <span id="headerName" style="color:#fff;font-weight:600;font-size:.9rem;"></span>
-      <button class="btn-logout" onclick="handleLogout()">Logout</button>
-    </div>
+
   </div>
 </header>
+
 
 <main class="dashboard-layout">
 
