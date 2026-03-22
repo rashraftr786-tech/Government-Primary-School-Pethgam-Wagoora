@@ -84,8 +84,8 @@ a:hover { color: var(--primary-dark); text-decoration: underline; }
 
 
 .school-logo {
-  width: 22px;
-  height: 22px;
+  width: 15px;
+  height: 15px;
   border-radius: 50%;
   border: 2px solid rgba(255,255,255,.6);
   background: rgba(255,255,255,.15);
