@@ -72,21 +72,16 @@ a:hover { color: var(--primary-dark); text-decoration: underline; }
 }
 
 .header-inner {
-  max-width: 1200px;
-  margin: 0 auto;
-  display: flex;
+  flex-direction: column; /* Stacks everything in the center */
   align-items: center;
-  justify-content: space-between;
-  min-height: 64px;
-  gap: .75rem;
+  text-align: center;
 }
 
 .school-brand {
-  display: flex;
-  align-items: center;
-  gap: .6rem;
-  flex: 1;
+  flex-direction: column;
+  margin-bottom: 10px;
 }
+
 
 .school-logo {
   width: 42px;
