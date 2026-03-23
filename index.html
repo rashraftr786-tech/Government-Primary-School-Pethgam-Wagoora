@@ -409,6 +409,14 @@ async function handleTeacherSignup(e) {
     btn.textContent = 'Create Teacher Account';
   }
 }
+  function showToast(msg, type) {
+  alert(msg); // Temporary fix so the code doesn't crash
+  window.location.reload(); 
+}
+
+function getCurrentWeek() { return "week_" + Math.ceil(new Date().getDate() / 7); }
+function getCurrentMonth() { return new Date().getMonth() + 1; }
+  
 </script>
 </body>
 </html>
